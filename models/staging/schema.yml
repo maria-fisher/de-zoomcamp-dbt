@@ -13,8 +13,8 @@ sources:
     tables:
       - name: green_taxi_data
       - name: yellow_taxi_data
-      - name:
-          fhv_data_2019
+
+      - name: fhv_data_2019
           # freshness:
           # error_after: {count: 6, period: hour}
 
