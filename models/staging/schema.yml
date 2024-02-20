@@ -1,0 +1,221 @@
+version: 2
+
+sources:
+  - name: staging
+    database:
+      de-zoomcamp-414513
+      # For postgres:
+      #database: production
+    schema:
+      trips_data_all
+
+      # loaded_at_field: record_loaded_at
+    tables:
+      - name: green_taxi_data
+      - name: yellow_taxi_data
+      - name:
+          fhv_data_2019
+          # freshness:
+          # error_after: {count: 6, period: hour}
+
+models:
+  - name: stg_green_taxi_data
+    description: >
+      The Green Taxi Trip dataset contains information related to pick-up and drop-off time and location, as well as driver income information.
+    columns:
+      - name: tripid
+        data_type: string
+        description: >
+          Taxi trips corresponding to both service zones (Green).
+          The table contains records where pickup and dropoff locations are valid and known zones. 
+          Each record corresponds to a trip uniquely identified by tripid. 
+            tests:
+            - unique:
+                severity: warn
+            - not_null:
+                severity: warn
+
+      - name: vendor_id
+        data_type: int64
+        description: >
+          A code indicating the TPEP provider that provided the record.
+          1= Creative Mobile Technologies, LLC; 2= VeriFone Inc.
+
+      - name: rate_code_id
+        data_type: int64
+        description: >
+          The final rate code in effect at the end of the trip.
+          1= Standard rate
+          2=JFK
+          3=Newark
+          4=Nassau or Westchester
+          5=Negotiated fare
+          6=Group ride
+
+      - name: pickup_location_id
+        data_type: int64
+        description: >
+          TLC Taxi Zone in which the trip began
+        tests:
+          - relationships:
+              to: ref('taxi_zone_lookup')
+              field: location_id
+              severity: warn
+
+      - name: dropoff_location_id
+        data_type: int64
+        description: >
+          TLC Taxi Zone in which the trip ended
+        tests:
+          - relationships:
+              to: ref('taxi_zone_lookup')
+              field: location_id
+              severity: warn
+
+      - name: pickup_datetime
+        data_type: timestamp
+        description: >
+          The date and time when the meter was engaged
+
+      - name: passenger_count
+        data_type: int64
+        description: >
+          The number of passengers in the vehicle.
+          This is a driver-entered value
+
+      - name: trip_distance
+        data_type: numeric
+        description: >
+          The elapsed trip distance in miles reported by the taximeter.
+
+      - name: trip_type
+        data_type: int64
+        description: >
+          A code indicating whether the trip was a street-hail or a dispatch
+          that is automatically assigned based on the metered rate in use but
+          can be altered by the driver.
+          1= Street-hail
+          2= Dispatch
+
+      - name: fare_amount
+        data_type: numeric
+        description: >
+          The time-and-distance fare calculated by the meter
+
+      - name: extra
+        data_type: numeric
+        description: >
+          Miscellaneous extras and surcharges. Currently, this only includes
+          the $0.50 and $1 rush hour and overnight charges.
+
+      - name: mta_tax
+        data_type: numeric
+        description: >
+          $0.50 MTA tax that is automatically triggered based on the metered
+          rate in use.
+
+      - name: tip_amount
+        data_type: numeric
+        description: >
+          This field is automatically populated for credit card
+          tips. Cash tips are not included
+
+      - name: tolls_amount
+        data_type: numeric
+        description: >
+          Total amount of all tolls paid in trip.
+
+      - name: ehail_fee
+        data_type: numeric
+        description: >
+          Total amount of fee for using electronic hailing (E-Hail).
+
+      - name: improvement_surcharge
+        data_type: numeric2+packages.yml+2
+        description: >
+          $0.30 improvement surcharge assessed on hailed trips at the flag drop. The improvement surcharge began being levied in 2015.
+
+      - name: total_amount
+        data_type: numeric
+        description: >
+          The total amount charged to passengers. Does not include cash tips.
+
+      - name: payment_type
+        data_type: int64
+        description: >
+          A numeric code signifying how the passenger paid for the trip.
+          1 = Credit card
+          2 = Cash
+          3 = No charge
+          4 = Dispute
+          5 = Unknown
+          6= Voided trip
+        tests:
+          - accepted_values:
+              values: "{{ var('payment_type_values') }}"
+              severity: warn
+              quote: false
+
+      - name: payment_type_description
+        data_type: string
+        description: ""
+
+  - name: stg_fhv_data_2019
+    description: >
+      For-Hire Vehicle (“FHV”) trip records include fields capturing the dispatching base license number and the pick-up date, 
+      time, and taxi zone location ID (shape file below).
+    columns:
+      - name: tripid
+        data_type: string
+        description: ""
+        tests:
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
+
+      - name: dispatching_base_num
+        data_type: string
+        description: >
+          The TLC Base License Number of the base that dispatched the trip
+
+      - name: affiliated_base_number
+        data_type: string
+        description: >
+          The TLC license number of the dispatching base
+
+      - name: shared_ride_flag
+        data_type: string
+        description: >
+          Indicates if the trip was a part of a shared ride chain offered by a High Volume FHV company
+          (for example, Uber Pool, Lyft Line). For shared trips, the value is 1. For non-shared rides, this field is null.
+
+      - name: pickup_location_id
+        data_type: int64
+        description: >
+          TLC Taxi Zone in which the trip began
+        tests:
+          - relationships:
+              to: ref('taxi_zone_lookup')
+              field: location_id
+              severity: warn
+
+      - name: dropoff_location_id
+        data_type: int64
+        description: >
+          TLC Taxi Zone in which the trip ended.
+        tests:
+          - relationships:
+              to: ref('taxi_zone_lookup')
+              field: location_id
+              severity: warn
+
+      - name: pickup_datetime
+        data_type: timestamp
+        description: >
+          The date and time of the trip pick-up.
+
+      - name: dropoff_datetime
+        data_type: timestamp
+        description: >
+          The date and time of the trip dropoff.

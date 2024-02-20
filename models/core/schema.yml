@@ -1,0 +1,220 @@
+
+version: 2
+
+models:
+  - name: fact_fhv_trips
+    description: >
+      Taxi trips corresponding to service zones (FHV).
+      The table contains records where pickup and dropoff locations are valid and known zones. 
+      Each record corresponds to a trip uniquely identified by tripid.
+    columns:
+      - name: tripid
+        data_type: string
+        description: >
+         "unique identifier conformed by the combination of vendor_id and pickyp time"
+
+      - name: dispatching_base_num
+        data_type: string
+        description: ""
+
+      - name: shared_ride_flag
+        data_type: string
+        description: ""
+
+      - name: affiliated_base_number
+        data_type: string
+        description: ""
+
+      - name: pickup_borough
+        data_type: string
+        description: ""
+
+      - name: pickup_zone
+        data_type: string
+        description: ""
+
+      - name: dropoff_location_id
+        data_type: int64
+        description: ""
+
+      - name: dropoff_borough
+        data_type: string
+        description: ""
+
+      - name: dropoff_zone
+        data_type: string
+        description: ""
+
+  - name: fact_trip
+    description: >
+      Taxi trips corresponding to both service zones (Green, yellow).
+      The table contains records where both pickup and dropoff locations are valid and known zones. 
+      Each record corresponds to a trip uniquely identified by tripid. 
+    columns:
+      - name: tripid
+        data_type: string
+        description: >
+          "unique identifier conformed by the combination of vendor_id and pickyp time"
+          
+
+      - name: vendor_id
+        data_type: int64
+        description: ""
+
+      - name: service_type
+        data_type: string
+        description: ""
+
+      - name: rate_code_id
+        data_type: int64
+        description: ""
+
+      - name: pickup_location_id
+        data_type: int64
+        description: ""
+
+        data_type: int64
+        description: ""
+
+      - name: dropoff_borough
+        data_type: string
+        description: ""
+
+      - name: dropoff_zone
+        data_type: string
+        description: ""
+
+      - name: pickup_datetime
+        data_type: timestamp
+        description: >
+          The date and time when the meter was engaged
+
+      - name: dropoff_datetime
+        data_type: timestamp
+        description: >
+          The date and time when the meter was disengaged.
+
+      - name: store_and_fwd_flag
+        data_type: string
+        description: ""
+
+      - name: passenger_count
+        data_type: int64
+        description: > 
+          The number of passengers in the vehicle.  
+          This is a driver-entered value.
+
+      - name: trip_distance
+        data_type: numeric
+        description: ""
+
+      - name: trip_type
+        data_type: int64
+        description: ""
+
+      - name: fare_amount
+        data_type: numeric
+        description: ""
+
+      - name: extra
+        data_type: numeric
+        description: ""
+
+      - name: mta_tax
+        data_type: numeric
+        description: ""
+
+      - name: tip_amount
+        data_type: numeric
+        description: ""
+
+      - name: tolls_amount
+        data_type: numeric
+        description: ""
+
+      - name: ehail_fee
+        data_type: numeric
+        description: ""
+
+      - name: improvement_surcharge
+        data_type: numeric
+        description: ""
+
+      - name: total_amount
+        data_type: numeric
+        description: ""
+
+      - name: payment_type
+        data_type: int64
+        description: ""
+
+      - name: payment_type_description
+        data_type: string
+        description: ""
+
+  
+  - name: dim_zones
+    description: >
+      List of unique zones idefied by locationid. 
+      Includes the service zone they correspond to (Green or yellow).
+
+  - name: dm_monthly_zone_revenue
+    description: >
+      Aggregated table of all taxi trips corresponding to both service zones (Green and yellow) per pickup zone, month and service.
+      The table contains monthly sums of the fare elements used to calculate the monthly revenue. 
+      The table contains also monthly indicators like number of trips, and average trip distance. 
+    columns:
+      - name: revenue_monthly_total_amount
+        description: Monthly sum of the the total_amount of the fare charged for the trip per pickup zone, month and service.
+        tests:
+            - not_null:
+                severity: error
+
+      - name: revenue_month
+        data_type: timestamp
+        description: ""
+
+      - name: service_type
+        data_type: string
+        description: ""
+
+      - name: revenue_monthly_fare
+        data_type: numeric
+        description: ""
+
+      - name: revenue_monthly_extra
+        data_type: numeric
+        description: ""
+
+      - name: revenue_monthly_mta_tax
+        data_type: numeric
+        description: ""
+
+      - name: revenue_monthly_tip_amount
+        data_type: numeric
+        description: ""
+
+      - name: revenue_monthly_tolls_amount
+        data_type: numeric
+        description: ""
+
+      - name: revenue_monthly_ehail_fee
+        data_type: numeric
+        description: ""
+
+      - name: revenue_monthly_improvement_surcharge
+        data_type: numeric
+        description: ""
+
+      - name: total_monthly_trips
+        data_type: int64
+        description: ""
+
+      - name: avg_monthly_passenger_count
+        data_type: float64
+        description: ""
+
+      - name: avg_monthly_trip_distance
+        data_type: numeric
+        description: ""
+        
