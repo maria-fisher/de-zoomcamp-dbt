@@ -133,7 +133,8 @@ models:
       - name: improvement_surcharge
         data_type: numeric2+packages.yml+2
         description: >
-          $0.30 improvement surcharge assessed on hailed trips at the flag drop. The improvement surcharge began being levied in 2015.
+          $0.30 improvement surcharge assessed on hailed trips at the flag drop. 
+          The improvement surcharge began being levied in 2015.
 
       - name: total_amount
         data_type: numeric
@@ -162,7 +163,8 @@ models:
 
   - name: stg_fhv_data_2019
     description: >
-      For-Hire Vehicle (“FHV”) trip records include fields capturing the dispatching base license number and the pick-up date, 
+      For-Hire Vehicle (“FHV”) trip records include fields capturing the dispatching base
+      license number and the pick-up date, 
       time, and taxi zone location ID (shape file below).
     columns:
       - name: tripid
@@ -188,7 +190,8 @@ models:
         data_type: string
         description: >
           Indicates if the trip was a part of a shared ride chain offered by a High Volume FHV company
-          (for example, Uber Pool, Lyft Line). For shared trips, the value is 1. For non-shared rides, this field is null.
+          (for example, Uber Pool, Lyft Line). For shared trips, the value is 1.
+          For non-shared rides, this field is null.
 
       - name: pickup_location_id
         data_type: int64
